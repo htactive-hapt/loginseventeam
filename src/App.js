@@ -1,25 +1,61 @@
-import React from 'react';
+import React, { createContext, useState, useEffect, Component } from 'react';
 import './App.css';
-import { LoginForm } from './components/users/LoginForm'
+import LoginForm from './components/users/LoginForm'
 import { RegisterForm } from './components/users/RegisterForm'
-import { HomePage } from './components/home/HomePage'
+import { Home } from './components/home/Home'
 import { NotFoundPage } from './components/NotFoundPage'
+import { BrowserRouter, Route, Link, Switch, useHistory, } from 'react-router-dom';
+import { withRouter } from "react-router";
+import { Header } from './components/home';
 
-import { BrowserRouter, Route, Link, Switch } from 'react-router-dom';
+const MeetupContext = createContext();
+class App extends Component {
+  state = {
+    ha: {}
+  }
+  loadHome = () => {
+    this.setState({
+      ha: {
+        token: localStorage.getItem('token'),
+        user: localStorage.getItem('user'),
+        username: localStorage.getItem('username')
+      }
+    })
+  }
 
-function App() {
-  return (
-    <div className="content">
+  render() {
+    const { ha } = this.state
+    return (
       <BrowserRouter>
-        <div className="dashboard"><Link to="/">Home</Link></div>
-        <div className="dashboard"><Link to="/login">Login</Link></div>
-        <div className="dashboard"><Link to="/register">Register</Link></div>
+        <MeetupContext.Provider value={ha}>
+          <MeetupContext.Consumer>
+            {props => (
+              props.token ? (
+                <div className="header">
+                  <Header />
+                  <div className="topnav">
+                    <Link to="/profile">{props.username}</Link>
+                    <Link to="/logout">LOGOUT</Link>
+                  </div>
+                </div>
+              )
+                :
+                <div className="header">
+                  <Header />
+                  <div className="topnav">
+                    <Link to="/login">LOGIN</Link>
+                    <Link to="/register">REGISTER</Link>
+                  </div>
+                </div>
+            )}
+          </MeetupContext.Consumer>
+        </MeetupContext.Provider >
         <Switch>
           <Route exact path="/">
-            <HomePage />
+            <Home />
           </Route>
           <Route exact path="/login">
-            <LoginForm />
+            <LoginForm loadHome={this.loadHome} />
           </Route>
           <Route exact path="/register">
             <RegisterForm />
@@ -27,8 +63,9 @@ function App() {
           <Route path="" component={NotFoundPage} />
         </Switch>
       </BrowserRouter>
-    </div>
-  );
+    );
+  }
 }
-
 export default App;
+
+

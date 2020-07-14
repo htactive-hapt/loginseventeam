@@ -1,25 +1,28 @@
 const url = 'https://town-house-api-seven-team.herokuapp.com/api/'
 
-function userLogin(username, password) {
+async function userLogin(username, password) {
     const data = {
         username: username,
         password: password
     }
 
-    fetch(`${url}users/sign-in`, {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-    })
-        .then(res => res.json())
-        .then((result) => {
-            localStorage.setItem("user", JSON.stringify(result));
-            localStorage.setItem('token', result.token)
-        })
-        .catch(error => console.error('Error: ', error))
+   try {
+        const res = await fetch(`${url}users/sign-in`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        localStorage.setItem("user", JSON.stringify(result.userPrinciple));
+        localStorage.setItem('token', result.token);
+        localStorage.setItem('username', result.userPrinciple.username);
+    }
+    catch (error) {
+        return console.error('Error: ', error);
+    }
 }
 
 function userRegister(user) {

@@ -1,1 +1,1 @@
-import {Common} from './Common'
+export {Common} from './Common'

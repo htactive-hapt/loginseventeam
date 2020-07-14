@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom'
 import { userLogin } from '../../actions/UserAction'
 
-function LoginForm() {
+const LoginForm = (props) => {
     const [inputs, setInputs] = useState({
         username: '',
         password: '',
@@ -22,15 +22,17 @@ function LoginForm() {
         setInputs(inputs => ({ ...inputs, [name]: value }));
     }
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
         setSubmitted(true)
         if (username && password) {
-            userLogin(username, password)
-            history.push('/home')
+           await userLogin(username, password);
+            const { loadHome } = props;
+            history.push('/');
+            loadHome();
         }
     }
-    
+
     return (
         <div className="login-container">
             < div className="form" >
@@ -52,4 +54,4 @@ function LoginForm() {
     )
 }
 
-export { LoginForm }
+export default LoginForm 
